@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Haptic interaction designer</title>
+  <meta name="description" content="">
+
+  <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
+  <link rel="stylesheet" type="text/css" href="beautiful.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js"
+    integrity="sha512-6BTOlkauINO65nLhXhthZMtepgJSghyimIalb+crKRPhvhmsCdnIuGcVbR5/aQY2A+260iC1OPy1oCdB6pSSwQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <header>
+    <h2>Haptic interaction node editor</h2>
+    <div class="github-link"><a href="https://github.com/HilkeB/haptic-interaction-designer" target="_blank"><i class="fab fa-github fa-3x"></i></a></div>
+  </header>
+
+  <div class="wrapper">
+    <div class="col">
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="ui">
+        <i class="fa-regular fa-window-maximize"></i><span> UI element</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="event">
+        <i class="fa-solid fa-computer-mouse"></i><span> Interaction event</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="actuator">
+        <i class="fa-solid fa-mobile-vibrate"></i><span> Actuator</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="effect">
+        <i class="fa-solid fa-wave-square"></i><span> Effect</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="delay">
+        <i class="fa-solid fa-hourglass-half"></i><span> Delay</span>
+      </div>
+
+
+    </div>
+    <div class="col-right">
+      <div id="drawflow" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+        <div class="btn-export" onclick="downloadNodes()">Export Nodes</div>
+        <div class="btn-export-config" onclick="downloadConfig()">Export Config</div>
+        <div class="btn-clear" onclick="editor.clearModuleSelected()">Clear</div>
+        <div class="btn-lock">
+          <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
+          <i id="unlock" class="fas fa-lock-open" onclick="editor.editor_mode='edit'; changeMode('unlock');"
+            style="display:none;"></i>
+        </div>
+        <div class="bar-zoom">
+          <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
+          <i class="fas fa-search" onclick="editor.zoom_reset()"></i>
+          <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var id = document.getElementById("drawflow");
+    const editor = new Drawflow(id);
+    editor.reroute = true;
+    editor.start();
+
+    let config = null;
+    async function preload() {
+
+      // Get the default configuration from JSON
+      fetch('./defaultNodes.json')
+        .then((response) => response.json())
+        .then((json) => {
+          editor.import(json); // load the defaults into the editor
+        });
+
+      // Get the LUT from JSON
+      fetch('./LUT.json')
+        .then((response) => response.json())
+        .then((json) => {
+          config = json; // store the LUT in the config variable
+          // console.log(config);
+        });
+    }
+    preload();
+
+
+    // Events!
+    editor.on('nodeCreated', function (id) {
+      console.log("Node created " + id);
+    })
+
+    editor.on('nodeRemoved', function (id) {
+      console.log("Node removed " + id);
+    })
+
+    editor.on('nodeSelected', function (id) {
+      console.log("Node selected " + id);
+    })
+
+    editor.on('moduleCreated', function (name) {
+      console.log("Module Created " + name);
+    })
+
+    editor.on('moduleChanged', function (name) {
+      console.log("Module Changed " + name);
+    })
+
+    editor.on('connectionCreated', function (connection) {
+      console.log('Connection created');
+      console.log(connection);
+    })
+
+    editor.on('connectionRemoved', function (connection) {
+      console.log('Connection removed');
+      console.log(connection);
+    })
+
+    editor.on('mouseMove', function (position) {
+      //console.log('Position mouse x:' + position.x + ' y:' + position.y);
+    })
+
+    editor.on('nodeMoved', function (id) {
+      console.log("Node moved " + id);
+    })
+
+    editor.on('zoom', function (zoom) {
+      console.log('Zoom level ' + zoom);
+    })
+
+    editor.on('translate', function (position) {
+      //console.log('Translate x:' + position.x + ' y:' + position.y);
+    })
+
+    editor.on('addReroute', function (id) {
+      console.log("Reroute added " + id);
+    })
+
+    editor.on('removeReroute', function (id) {
+      console.log("Reroute removed " + id);
+    })
+
+    /* DRAG EVENT */
+
+    /* Mouse and Touch Actions */
+
+    var elements = document.getElementsByClassName('drag-drawflow');
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].addEventListener('touchend', drop, false);
+      elements[i].addEventListener('touchmove', positionMobile, false);
+      elements[i].addEventListener('touchstart', drag, false);
+    }
+
+    var mobile_item_selec = '';
+    var mobile_last_move = null;
+    function positionMobile(ev) {
+      mobile_last_move = ev;
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      if (ev.type === "touchstart") {
+        mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
+      } else {
+        ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
+      }
+    }
+
+    function drop(ev) {
+      if (ev.type === "touchend") {
+        var parentdrawflow = document.elementFromPoint(mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY).closest("#drawflow");
+        if (parentdrawflow != null) {
+          addNodeToDrawFlow(mobile_item_selec, mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY);
+        }
+        mobile_item_selec = '';
+      } else {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("node");
+        addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+      }
+
+    }
+
+    /**
+     * Adds a new node to the DrawFlow editor based on the specified type and position.
+     * Handles different node types with their respective HTML templates and default data.
+     * @param {string} name - The type of node to add ('ui', 'event', 'actuator', 'effect', 'delay')
+     * @param {number} pos_x - The x-coordinate position for the new node
+     * @param {number} pos_y - The y-coordinate position for the new node
+     */
+    function addNodeToDrawFlow(name, pos_x, pos_y) {
+      if (editor.editor_mode === 'fixed') {
+        return false;
+      }
+      // Adjust position for zoom and canvas offset
+      pos_x = pos_x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
+      pos_y = pos_y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
+
+      // Create node based on type
+      switch (name) {
+        case 'ui':
+          var ui = `
+          <div>
+            <div class="title-box"><i class="fa-regular fa-window-maximize"></i></i> UI element</div>
+            <div class="box">
+              <p>Select the UI element</p>
+              <select df-element>
+                ${config.htmlElementIds.map(htmlElementId => `<option value="${htmlElementId}">${htmlElementId}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          `;
+          editor.addNode('ui', 0, 1, pos_x, pos_y, 'ui', { "element": config.htmlElementIds[0] }, ui);
+          break;
+        case 'event':
+          var event = `
+          <div>
+            <div class="title-box"><i class="fa-solid fa-computer-mouse"></i> Interaction event</div>
+            <div class="box">
+              <p>Select the UI interaction event</p>
+              <select df-domevent>
+                ${config.domEvents.map(domEvent => `<option value="${domEvent}">${domEvent}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          `;
+          editor.addNode('event', 1, 1, pos_x, pos_y, 'event', { "domevent": config.domEvents[0] }, event);
+          break;
+        case 'actuator':
+          var actuator = `
+          <div>
+            <div class="title-box"><i class="fa-solid fa-mobile-vibrate"></i> Actuator</div>
+            <div class="box">
+              <p>Select the Actuator</p>
+              <input type="number" df-actuatornr min="1" max="8", step="1">
+            </div>
+            <div class="box">
+              <p>Select the Actuator type</p>
+              <select df-actuatortype>
+                <option value="erm">ERM</option>
+                <option value="lra">LRA</option>
+              </select>
+            </div>
+          </div>
+          `;
+          editor.addNode('actuator', 1, 1, pos_x, pos_y, 'actuator', { "actuatornr": '1', "actuatortype": 'erm' }, actuator);
+          break;
+        case 'effect':
+          var effect = `
+          <div>
+            <div class="title-box"><i class="fa-solid fa-wave-square"></i> Effect</div>
+            <div class="box">
+              <p>Select the effect</p>
+              <select df-effectnr onchange="updateEffectIntensityOptions(this)">
+                ${config.effects.map(effect => `<option value="${effect.name}">${effect.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="box">
+              <p>Select the intensity</p>
+              <select df-effectintensity>
+              ${config.effects[0].intensities.map((intensity, index) => `<option value="${config.effects[0].id + index}">${intensity}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          `;
+          let newNodeId = editor.addNode('effect', 1, 1, pos_x, pos_y, 'effect', { "effectnr": config.effects[0].name, "effectintensity": config.effects[0].id }, effect);
+          break;
+
+        case 'delay':
+          var delay = `
+          <div>
+            <div class="title-box"><i class="fa-solid fa-hourglass-half"></i> Delay</div>
+            <div class="box">
+              <p>Select the Delay in milliseconds</p>
+              <input type="number" id="msInput" name="ms_input" min="10" max="1280" step="10" value="10" df-delay><label for="ms_input">ms</label>
+            </div>
+          </div>
+          `;
+          editor.addNode('delay', 1, 1, pos_x, pos_y, 'delay', { "delay": '10' }, delay);
+          break;
+
+        default:
+      }
+    }
+
+    function updateEffectIntensityOptions(effect) {
+      // console.log(effect, config);
+
+      let effectObject = config.effects.find(e => e.name == effect.value);
+      let node = document.getElementById(effect.parentElement.parentElement.parentElement.parentElement.id);
+      let effectIntensitySelector = node.childNodes[1].childNodes[1].childNodes[5].childNodes[3];
+
+      // console.log(effectObject, node, effectIntensitySelector);
+
+      while (effectIntensitySelector.firstChild) {
+        effectIntensitySelector.removeChild(effectIntensitySelector.firstChild);
+      }
+
+      effectObject.intensities.forEach((intensity, index) => {
+        let option = document.createElement('option');
+        option.value = effectObject.id + index;
+        option.innerHTML = intensity;
+        effectIntensitySelector.append(option);
+      });
+    }
+
+    /**
+     * Toggles the editor's lock/unlock state by updating the visibility of lock/unlock icons.
+     * @param {string} option - The mode to switch to ('lock' or 'unlock')
+     */
+    function changeMode(option) {
+      if (option == 'lock') {
+        lock.style.display = 'none';
+        unlock.style.display = 'block';
+      } else {
+        lock.style.display = 'block';
+        unlock.style.display = 'none';
+      }
+    }
+
+    /**
+     * Downloads the current editor configuration as a JSON file.
+     * Exports the editor's data and triggers a download with the specified filename.
+     */
+    function downloadNodes() {
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(editor.export()));
+      let downloadAnchorNode = document.createElement('a');
+      let downloadName = "Interactions";
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", downloadName + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+
+    function downloadConfig() {
+      let sequences = [];
+      let data = editor.export().drawflow.Home.data;
+      // console.log(data);
+
+      for (n in data) { // loop through all nodes
+        let node = data[n];
+        // console.log("Node":, node);
+
+        if (node.name == "ui") { // detect dom element
+          // console.log("UI element:", node);
+          let events = node.outputs.output_1.connections;
+
+          events.forEach(event => { // loop through all events attached to dom element
+            // console.log("Event:", data[event.node]);
+            let actuators = data[event.node].outputs.output_1.connections;
+
+            let actuatorData = [];
+            actuators.forEach(actuator => { // loop through all actuators attached to event
+              // console.log("Actuator:", data[actuator.node]);
+
+              path = []; // clear path before each depth-first search, then perform search
+              checkConnection(data[actuator.node], data);
+              actuatorData.push(path);
+            });
+
+            // console.log("EVENT:", node.data.element, data[event.node].data.domevent, actuatorData);
+
+            // Generate bytecode sequence by building start bits, device config bits, effect / delay bits and end bits
+            let domId = node.data.element;
+            let eventType = data[event.node].data.domevent;
+            let sequence = [];
+            actuatorData.forEach(actuator => {  // loop through all actuators that need to be triggered
+              actuator.forEach((a, index) => {  // loop through each path (consisting of actuatorinfo + up to 8 effects/delays)
+                if (index == 0) { // first item in actuatorData is actuatorInfo
+                  sequence.push(124); // begin sequence bit
+                  let playbackType = 'oneshot';
+                  let actuatorType = a.data.actuatortype;
+                  let deviceIdConfig = ((playbackType == 'oneshot' ? 0 : 1) << 5) | ((actuatorType == "erm" ? 0 : 1)) << 4 | (a.data.actuatornr - 1);
+                  sequence.push(deviceIdConfig);  // add device config
+                } else {
+                  if (a.name == "effect") {
+                    let effectNr = a.data.effectintensity;
+                    sequence.push(effectNr & 0x7F);  // add effect
+                  } else if (a.name == "delay") {
+                    let delayValue = a.data.delay / 10;
+                    sequence.push(0x80 | (delayValue - 1));  // add delay
+                  } else {
+                    console.error("Unknown actuator function:", a.name)
+                  }
+                }
+              });
+              sequence.push(0x00); // sequence stop (to block sequencer from overflowing in previous effects)
+            });
+            sequence.push(125); // add final GO bit
+
+            // console.log("Current config:", {
+            //     "domId": domId,
+            //     "eventType": eventType,
+            //     "sequence": sequence
+            // });
+
+            sequences.push({
+              "domId": domId,
+              "eventType": eventType,
+              "sequence": sequence
+            });
+          });
+        }
+      }
+
+      // console.log("Config:", sequences);
+
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sequences));
+      let downloadAnchorNode = document.createElement('a');
+      let downloadName = "Config";
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", downloadName + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+
+    function checkConnection(node, data) {  // depth-first search on all attached interactions
+      path.push(node);  // add current node to the current path
+
+      if (node.outputs.output_1.connections.length == 1) {
+        // console.log("Node has connection:", data[node.outputs.output_1.connections[0].node]);
+        checkConnection(data[node.outputs.output_1.connections[0].node], data);
+      } else {
+        // console.log("Node has no (more) connection.");
+      }
+    }
+
+  </script>
+</body>
+
+</html>
