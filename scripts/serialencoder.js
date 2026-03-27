@@ -164,6 +164,7 @@ function loadConfig() {
         config = JSON.parse(localStorage.getItem("hapticConfig"));
     } else {
         console.error("No config was saved yet!");
+        updateMessage("No haptic configuration file was found in the storage!");
         return; // Exit if no config exists
     }
 
