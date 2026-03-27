@@ -1,0 +1,87 @@
+body {
+      font-family: Arial, sans-serif;
+      background-color: #E6F0FA;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #canvas-container {
+      background-color: #DAE8FC;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    #logo {
+      font-size: 30px;
+      position: absolute;
+    }
+
+    #title-display {
+      font-size: 18px;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .menu-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: absolute;
+    }
+
+    .menu-label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .menu-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .menu-button {
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button {
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+
+    button:active {
+      background-color: #ddd;
+    }
+
+#back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 100px;
+  height: 40px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+#back-button:hover {
+  background-color: #45a049;
+}
