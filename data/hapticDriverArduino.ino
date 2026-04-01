@@ -1,10 +1,15 @@
-#include "Adafruit_DRV2605.h"
-#include <Wire.h>  // I2C library
+#include <Sparkfun_DRV2605L.h>
+#include <Wire.h>
 
-#define PCAADDR 0x70  // Default I2C address of TCA9548A
-Adafruit_DRV2605 drv[8];
+#define PCAADDR 0x70
+#define DRVADDR 0x5A
+#define SDA 41
+#define SCL 40
+
 int deviceID = 0;
-byte message[161];  // Maximum serial buffer
+byte message[161];
+
+SFE_HMD_DRV2605L HMD[8];
 
 void setup() {
 
@@ -14,58 +19,26 @@ void setup() {
 
   // Setup the I2C specifically for the Adafruit QT Py ESP32-S2
   Wire.end();
-  Wire.setPins(41, 40);
+  Wire.setPins(SDA, SCL);
   Wire.begin();
+  Wire.setClock(1000000);
 
-  // Go through all ports and I2C addresses
-  for (uint8_t t = 0; t < 8; t++) {
-    pcaselect(t);
-    Serial.print("### PCA Port #");
-    Serial.println(t);
+  for (int port = 0; port < 8; port++) {
+    pcaselect(port);
 
-    // Go through all I2C addresses
-    for (uint8_t addr = 0; addr <= 127; addr++) {
-      if (addr == PCAADDR) continue;
-
-      // If a I2C address responds, check it out
-      Wire.beginTransmission(addr);
-      if (!Wire.endTransmission()) {
-
-        // If the I2C address is 0x5A, this is a DRV2605L haptic driver
-        if (addr == 90) {
-
-          // Initialise the DRV2605L haptic driver in the correct object index
-          if (!drv[t].begin()) {
-            Serial.println("### Could not connect to DRV2605");
-            while (1) delay(10);
-          }
-          Serial.println("### DRV2506L configured");
-
-          // Initialise the driver with the default values
-          drv[t].selectLibrary(1);
-          drv[t].setMode(DRV2605_MODE_INTTRIG);
-        }
-      }
+    Wire.beginTransmission(DRVADDR);
+    if (!Wire.endTransmission()) {
+      HMD[port].begin();
+      HMD[port].MotorSelect(0x0A);
+      HMD[port].Library(2);
     }
   }
-  Serial.println("### Starting loop");
 }
 
 void loop() {
   if (Serial.available() > 0) {
     // Read serial until GO byte is sent (125, 0x7D)
     int bytesRead = Serial.readBytesUntil(125, message, sizeof(message));
-
-    // DEBUG
-    Serial.print("### Received bytes: ");
-    Serial.println(bytesRead);
-    Serial.print("### Received message: ");
-    for (int b = 0; b < bytesRead; b++) {
-      Serial.print(message[b]);
-      Serial.print(",");
-    }
-    Serial.println();
-    // END DEBUG
 
     bool deviceFound = false;
     int effectDelayCounter = 0;
@@ -78,7 +51,6 @@ void loop() {
 
         // Is there a BeginSequence byte
         if (currentByte == 124) {
-          Serial.println("### BeginSequence byte found");
           deviceFound = true;
           continue;
         }
@@ -88,15 +60,6 @@ void loop() {
           deviceID = currentByte & 15;
           bool hapticType = currentByte & 16;
           bool playbackType = currentByte & 32;
-
-          // DEBUG
-          Serial.print("### Device ID: ");
-          Serial.println(deviceID);
-          Serial.print("### Haptic Type: ");
-          Serial.println(hapticType);
-          Serial.print("### Playback Type: ");
-          Serial.println(playbackType);
-          // END DEBUG
 
           // Select appropriate haptic device by ID
           pcaselect(deviceID);
@@ -111,36 +74,24 @@ void loop() {
         int effectDelay = currentByte;
         int effectDelaySlot = effectDelayCounter;
 
-        // DEBUG
-        Serial.print("### Effect / Delay slot: ");
-        Serial.println(effectDelaySlot);
-        Serial.print("### Effect / Delay: ");
-        Serial.println(effectDelay);
-        // END DEBUG
-
-        drv[deviceID].setWaveform(effectDelaySlot, effectDelay);
+        HMD[deviceID].Waveform(effectDelaySlot, effectDelay);
+        if (effectDelay == 0) {
+          HMD[deviceID].go();
+        }
 
         effectDelayCounter++;
       }
 
-      Serial.println("### Starting actuators");
-      startAllHapticActuators();
     } else {
       // TODO: add error (LED?)
     }
-  }
+  }  // put your main code here, to run repeatedly:
 }
 
 void pcaselect(uint8_t i) {
   if (i > 7) return;
+  delayMicroseconds(10);
   Wire.beginTransmission(PCAADDR);
   Wire.write(1 << i);  // Set the bit corresponding to the channel
   Wire.endTransmission();
-}
-
-void startAllHapticActuators() {
-  for (int actuator = 0; actuator < 3; actuator++) {
-    pcaselect(actuator);
-    drv[actuator].go();
-  }
 }

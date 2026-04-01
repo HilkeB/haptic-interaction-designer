@@ -281,7 +281,6 @@ function downloadNodes() {
   downloadAnchorNode.remove();
 }
 
-// TODO: add function to load nodes
 function loadNodes() {
   // Create a file input element
   const fileInput = document.createElement('input');
@@ -321,11 +320,11 @@ function saveConfig() {
 function generateConfig() {
   let sequences = [];
   let data = editor.export().drawflow.Home.data;
-  // console.log(data);
+  // console.log("data", data);
 
   for (n in data) { // loop through all nodes
     let node = data[n];
-    // console.log("Node":, node);
+    // console.log("Node", node);
 
     if (node.name == "ui") { // detect dom element
       // console.log("UI element:", node);
@@ -360,7 +359,10 @@ function generateConfig() {
               sequence.push(deviceIdConfig);  // add device config
             } else {
               if (a.name == "effect") {
-                let effectNr = a.data.effectintensity;
+                let effectNode = document.getElementById("node-" + a.id);
+                let effectIntensitySelector = effectNode.childNodes[1].childNodes[1].childNodes[5].childNodes[3];
+                let effectNr = effectIntensitySelector.value;
+                
                 sequence.push(effectNr & 0x7F);  // add effect
               } else if (a.name == "delay") {
                 let delayValue = a.data.delay / 10;

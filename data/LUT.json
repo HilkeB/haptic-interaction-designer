@@ -54,17 +54,14 @@
     "domEvents": [
         "click",
         "mouseover",
-        "contextmenu",
+        "mousemove",
         "dblclick",
         "ended",
         "error",
         "message",
         "mousedown",
-        "mouseover",
         "mouseup",
         "mouseout",
         "mouseenter"
-
-
     ]
 }
