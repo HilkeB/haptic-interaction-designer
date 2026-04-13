@@ -39,17 +39,102 @@
             "name": "Alert",
             "id": 15,
             "intensities": ["750ms", "1000ms"]           
+        },
+        {
+            "name": "Strong Click number",
+            "id": 17,
+            "intensities": ["1", "2", "3", "4"]           
+        },
+        {
+            "name": "Medium Click",
+            "id": 21,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Sharp Tick",
+            "id": 24,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Short Double Click Strong",
+            "id": 27,
+            "intensities": ["1", "2", "3", "4"]           
+        },
+        {
+            "name": "Short Double click Medium",
+            "id": 31,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Short double click sharp tick",
+            "id": 34,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Long double sharp click strong",
+            "id": 37,
+            "intensities": ["1", "2", "3", "4"]           
+        },
+        {
+            "name": "Long double sharp click medium",
+            "id": 41,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Long double sharp tick",
+            "id": 44,
+            "intensities": ["1", "2", "3"]           
+        },
+        {
+            "name": "Buzz",
+            "id": 47,
+            "intensities": ["1", "2", "3", "4", "5"]           
+        },
+        {
+            "name": "Pulsing strong",
+            "id": 52,
+            "intensities": ["1", "2"]           
         }
+        ,
+        {
+            "name": "Pulsing medium",
+            "id": 54,
+            "intensities": ["1", "2"]           
+        },
+        {
+            "name": "Pulsing sharp",
+            "id": 56,
+            "intensities": ["1", "2"]           
+        },
+        {
+            "name": "transition click",
+            "id": 58,
+            "intensities": ["1", "2", "3", "4", "5", "6"]           
+        },
+        {
+            "name": "transition hum",
+            "id": 64,
+            "intensities": ["1", "2", "3", "4", "5", "6"]           
+        },
+        {
+            "name": "transition ramp down long smooth",
+            "id": 70,
+            "intensities": ["1", "2"]           
+        }
+ 
 
     ],
     "htmlElementIds": [
-        "btn-signup",
-        "btn-cancel",
-        "title_image",
-        "paragraph_toolkit",
-        "image_crocodile",
+        "body",
+        "#canvas-container",
+        "#logo",
+        "#title-display",
+        ".menu-section",
         ".menu-button",
-        "#canvas-container"
+        "button",
+        "#back-button",
+        ".keyboard",
+        ".menu-label"    
     ],
     "domEvents": [
         "click",
@@ -61,7 +146,20 @@
         "message",
         "mousedown",
         "mouseup",
-        "mouseout",
-        "mouseenter"
+        "mouseleave",
+        "mouseenter",
+        "keydown",
+        "keypress",
+        "keyup",
+        "copy",
+        "cut",
+        "volumechange",
+        "resize",
+        "scroll",
+        "select",
+        "pause",
+        "play",
+        "Playing"
+
     ]
 }

@@ -51,7 +51,7 @@ function setup() {
 
     // Thickness dropdown
     let thicknessDropdown = createSelect();
-    thicknessDropdown.position(20, canvasHeight + 180);
+    thicknessDropdown.position(60, canvasHeight + 200);
     thicknessDropdown.option('Thin (1px)', 1);
     thicknessDropdown.option('Medium (5px)', 5);
     thicknessDropdown.option('Thick (10px)', 10);
@@ -193,6 +193,7 @@ function createKeyboard() {
         for (let j = 0; j < keys[i].length; j++) {
             let key = keys[i][j];
             let button = createButton(key);
+            button.class('keyboard');
             button.position(startX + j * (keySize + margin), startY + i * (keySize + margin));
             button.size(keySize, keySize);
             button.mousePressed(() => handleKeyPress(key));
@@ -207,6 +208,7 @@ function createKeyboard() {
 
 function createKeyboardButton(x, y, label, key) {
     let button = createButton(label);
+    button.class('keyboard-button');
     button.position(x, y);
     button.size(110, 50);
     button.mousePressed(() => handleKeyPress(key));
@@ -222,3 +224,4 @@ function handleKeyPress(key) {
     else artName += key;
     document.getElementById('title-display').textContent = 'Art Name: ' + artName;
 }
+
