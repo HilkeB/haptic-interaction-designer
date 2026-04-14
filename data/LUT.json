@@ -125,7 +125,9 @@
 
     ],
     "htmlElementIds": [
+        "window",
         "body",
+        "isDrawing",
         "#canvas-container",
         "#logo",
         "#title-display",
@@ -134,7 +136,9 @@
         "button",
         "#back-button",
         ".keyboard",
-        ".menu-label"    
+        ".topbutton",
+        ".thickness"
+            
     ],
     "domEvents": [
         "click",

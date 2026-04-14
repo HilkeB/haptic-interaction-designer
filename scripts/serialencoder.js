@@ -170,6 +170,34 @@ function loadConfig() {
 
     // Process each interaction in the config
     config.forEach(interaction => {
+        if (interaction.domId == 'window') {
+            window.addEventListener(interaction.eventType, (e) => {
+                console.log(`${interaction.domId} has triggered ${interaction.eventType}`);
+
+                // Skip hover events (no action needed)
+                if (interaction.eventType === "hover") return;
+                // Convert sequence to Uint8Array and send to Arduino
+                const message = new Uint8Array(interaction.sequence);
+                sendMessage(message);
+            });
+        }
+        // TODO: fix slightly hacky way to detect continuous events like drawing
+        else if (interaction.domId == 'isDrawing') {
+            let canvas = document.querySelector("#canvas-container");
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDrawing) {
+                    console.log(`${interaction.domId} has moved while isDrawing is true`);
+
+                    // Skip hover events (no action needed)
+                    if (interaction.eventType === "hover") return;
+                    // Convert sequence to Uint8Array and send to Arduino
+                    const message = new Uint8Array(interaction.sequence);
+                    sendMessage(message);
+                }
+            });
+
+        }
+
         // Find all DOM elements matching the selector
         let domElements = document.querySelectorAll(interaction.domId);
 
@@ -179,17 +207,17 @@ function loadConfig() {
         }
 
         // Add event listeners to each matching element
-            domElements.forEach(domElement => {
-                domElement.addEventListener(interaction.eventType, (e) => {
-                    console.log(`${interaction.domId} has triggered ${interaction.eventType}`);
+        domElements.forEach(domElement => {
+            domElement.addEventListener(interaction.eventType, (e) => {
+                console.log(`${interaction.domId} has triggered ${interaction.eventType}`);
 
                 // Skip hover events (no action needed)
-                    if (interaction.eventType === "hover") return;
+                if (interaction.eventType === "hover") return;
                 // Convert sequence to Uint8Array and send to Arduino
-                    const message = new Uint8Array(interaction.sequence);
-                    sendMessage(message);
-                });
+                const message = new Uint8Array(interaction.sequence);
+                sendMessage(message);
             });
+        });
     });
 
     console.log("Configuration was applied to the DOM elements");

@@ -57,6 +57,7 @@ function setup() {
     thicknessDropdown.option('Thick (10px)', 10);
     thicknessDropdown.option('Very Thick (15px)', 15);
     thicknessDropdown.selected('Medium (5px)');
+    thicknessDropdown.class('thickness');
     thicknessDropdown.changed(() => strokeWeightValue = thicknessDropdown.value());
 
     createKeyboard();
@@ -91,6 +92,7 @@ function createTopButton(label, x, y, onPress) {
     button.style('background-color', '#4CAF50');
     button.style('color', 'white');
     button.style('padding', '8px 16px');
+    button.class('top-button');
     button.mousePressed(onPress);
 }
 
