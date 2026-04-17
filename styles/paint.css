@@ -114,3 +114,11 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #b30000; 
 }
+
+#video{
+  position: absolute;
+  right: 500px;
+  top: 1000px;
+  width: 500px;
+  height: 300px;
+}
