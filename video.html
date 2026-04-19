@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video viewer</title>
+    <style>
+        #header {
+            padding: 20px;
+        }
+
+        #stop-button {
+            background-color: red;
+            color: white;
+            font-size: 24px;
+            display: block;
+            margin: 0 auto;
+            padding: 10px 40px;
+        }
+
+        #video {
+            width: 100%;
+            max-height: calc(100vh - 100px);
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <button id="stop-button" onclick="window.location.href = '';">STOP</button>
+    </div>
+
+    <div id="video">
+        <video loop controls id="video">
+            <source src="data/video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script src="scripts/serialencoder.js"></script>
+</body>
+
+</html>

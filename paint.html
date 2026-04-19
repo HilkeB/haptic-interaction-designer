@@ -10,16 +10,63 @@
 </head>
 
 <body>
-  <div id="logo">🎨</div>
-  <div id="title-display">Art Name: </div>
-  <div id="canvas-container"></div>
+  <div class="container">
 
-  <a href="index.html" id="back-button">Back</a>
+    <div class="header">
+      <div class="back">
+        <button id="back-button" onclick="backButton()">TERUG</button>
+      </div>
+      <div class="logo" id="logo">
+        <button id="stop-button" onclick="stopButton()">STOP</button>
+      </div>
+      <div class="clear">
+        <button id="clear-button" onclick="clearButton()">CANVAS LEEG</button>
+      </div>
+      <div class="save">
+        <button id="save-button" onclick="saveButton()">OPSLAAN</button>
+      </div>
+    </div>
 
-  <video width="320" height="240" controls id="video">
-    <source src="data/video.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+    <div class="canvas" id="canvas-container"></div>
+
+    <div class="title" id="title-display">Naam kunstwerk: </div>
+
+    <div class="controls">
+      <div class="colors">
+        <div class="colorstitle">Kleur</div>
+        <button class="colorbutton" id="red" onclick="changeColor('#FF0000')"></button>
+        <button class="colorbutton" id="blue" onclick="changeColor('#0000FF')"></button>
+        <button class="colorbutton" id="yellow" onclick="changeColor('#FFFF00')"></button>
+        <button class="colorbutton" id="erase" onclick="changeColor('#DCEBFA')">🧽</button>
+      </div>
+      <div class="shapes">
+        <div class="shapestitle">Vorm</div>
+        <button class="shapebutton" id="line" onclick="changeShape('none')">➖</button>
+        <button class="shapebutton" id="square" onclick="changeShape('rectangles')">◼</button>
+        <button class="shapebutton" id="hexagon" onclick="changeShape('dotted')">⬢</button>
+        <button class="shapebutton" id="circle" onclick="changeShape('circles')">⭕</button>
+      </div>
+      <div class="sizes">
+        <div class="sizestitle">Dikte</div>
+        <select name="sizes" class="thickness" id="sizeselect" onchange="changeThickness()">
+          <option value="1">Dun (1px)</option>
+          <option value="5" selected>Medium (5px)</option>
+          <option value="10">Dik (10px)</option>
+          <option value="15">Zeer dik (15px)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="keyboard">
+      <div class="keys" id="keys"></div>
+      <div class="specialkeys">
+        <button id="specialbutton delete" onclick="handleKeyPress('EMPTY')"><br>TITEL LEEG<br><br></button>
+        <button id="specialbutton backspace" onclick="handleKeyPress('BACKSPACE')"><br>BACKSPACE<br><br></button>
+        <button id="specialbutton space" onclick="handleKeyPress('SPATIE')"><br>SPATIE<br><br></button>
+      </div>
+    </div>
+
+  </div>
 
   <script src="scripts/paint.js"></script>
   <script src="scripts/serialencoder.js"></script>
